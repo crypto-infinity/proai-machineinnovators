@@ -7,7 +7,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from transformers import pipeline
 import logging
+
 
 # Load env variables
 load_dotenv()
@@ -34,7 +36,7 @@ app.add_middleware(
 # Data structures setup
 
 class AnalysisRequest(BaseModel):
-    sentiment_string: str
+    input_string: str
 
 
 class AnalysisResponse(BaseModel):
@@ -48,8 +50,19 @@ async def inference(request: AnalysisRequest):
     """
 
     try:
-        pass
-    # TO-DO: implement inference
+        MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
+
+        classification = pipeline(
+            "text-classification",
+            model=MODEL
+        )
+
+        result = classification(request.input_string)[0]
+
+        return AnalysisResponse(
+            label=result['label'],
+            score=result['score']
+        )
 
     except Exception as e:
         logging.error(e)

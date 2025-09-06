@@ -6,3 +6,6 @@ uvicorn[standard]
 pytest
 huggingface_hub[cli]
 transformers
+torch
+datasets
+huggingface_hub[hf_xet]
