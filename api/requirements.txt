@@ -1,0 +1,8 @@
+pydantic
+fastapi
+dotenv
+gunicorn
+uvicorn[standard]
+pytest
+huggingface_hub[cli]
+transformers
