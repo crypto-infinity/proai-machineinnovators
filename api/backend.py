@@ -8,6 +8,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from transformers import pipeline
+from train import ModelTrainer
 import logging
 
 
@@ -34,6 +35,14 @@ app.add_middleware(
 
 
 # Data structures setup
+
+class TrainData(BaseModel):
+    pass
+
+
+class TrainResult(BaseModel):
+    pass
+
 
 class AnalysisRequest(BaseModel):
     input_string: str
@@ -63,6 +72,21 @@ async def inference(request: AnalysisRequest):
             label=result['label'],
             score=result['score']
         )
+
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/train")
+def train(request: TrainData):
+    """
+    """
+
+    try:
+        trainer = ModelTrainer()
+        trainer.retrain()
+        return TrainResult()
 
     except Exception as e:
         logging.error(e)
