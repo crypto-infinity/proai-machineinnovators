@@ -46,6 +46,7 @@ class TrainResult(BaseModel):
 
 class AnalysisRequest(BaseModel):
     input_string: str
+    model: str = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
 
 class AnalysisResponse(BaseModel):
@@ -59,11 +60,10 @@ async def inference(request: AnalysisRequest):
     """
 
     try:
-        MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 
         classification = pipeline(
             "text-classification",
-            model=MODEL
+            model=request.model
         )
 
         result = classification(request.input_string)[0]
@@ -78,7 +78,7 @@ async def inference(request: AnalysisRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/train")
+@app.post("/train_and_upload")
 def train(request: TrainData):
     """
     """
