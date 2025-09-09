@@ -46,6 +46,7 @@ class TrainResult(BaseModel):
 
 class AnalysisRequest(BaseModel):
     input_string: str
+    model: str
 
 
 class AnalysisResponse(BaseModel):
@@ -59,11 +60,9 @@ async def inference(request: AnalysisRequest):
     """
 
     try:
-        MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-
         classification = pipeline(
             "text-classification",
-            model=MODEL
+            model=request.model
         )
 
         result = classification(request.input_string)[0]
