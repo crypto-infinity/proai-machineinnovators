@@ -7,8 +7,9 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from transformers import pipeline
+
 from train import ModelTrainer
+from train import Inference
 import logging
 
 
@@ -37,45 +38,61 @@ app.add_middleware(
 # Data structures setup
 
 class TrainData(BaseModel):
-    pass
-
+    model_name: str
+    dataset: str
 
 class TrainResult(BaseModel):
-    pass
+    metrics: dict
 
-
-class AnalysisRequest(BaseModel):
+class InferenceInput(BaseModel):
     input_string: str
     model: str
 
-
-class AnalysisResponse(BaseModel):
+class InferenceOutput(BaseModel):
     label: str
     score: float
 
+class BatchInferenceInput(InferenceInput):
+    dataset: str #huggingface format user/dataset
 
-@app.post("/inference", response_model=AnalysisResponse)
-async def inference(request: AnalysisRequest):
+class BatchInferenceOutput(BaseModel):
+    predictions: dict
+    metrics: dict
+
+
+@app.post("/inference", response_model=InferenceOutput)
+def inference(request: InferenceInput):
     """
+    Single string inference for sentiment analysis.
     """
 
     try:
-        classification = pipeline(
-            "text-classification",
-            model=request.model
-        )
+        infer = Inference(model=request.model)
+        label, score = infer.single_inference(request.input_string)
 
-        result = classification(request.input_string)[0]
-
-        return AnalysisResponse(
-            label=result['label'],
-            score=result['score']
-        )
-
+        return InferenceOutput(label=label, score=score)
+        
     except Exception as e:
         logging.error(e)
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/batch_inference", response_model=BatchInferenceOutput)
+def batch_inference(request: BatchInferenceInput):
+    """
+    Batch inference for sentiment analysis.
+    """
+
+    try:
+        infer = Inference(model=request.model)
+        result = infer.batch_inference(request.dataset)
+
+        return BatchInferenceOutput(predictions=result['results'],
+                                    metrics=result['metrics']
+                                    )
+
+    except Exception as e:
+        logging.error(e)
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/train")
 def train(request: TrainData):
@@ -83,9 +100,9 @@ def train(request: TrainData):
     """
 
     try:
-        trainer = ModelTrainer()
-        trainer.retrain()
-        return TrainResult()
+        trainer = ModelTrainer(request.model_name)
+        result = trainer.retrain()
+        return TrainResult(metrics=result['metrics'])
 
     except Exception as e:
         logging.error(e)
