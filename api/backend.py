@@ -8,8 +8,7 @@ from fastapi.responses import RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from train import ModelTrainer
-from train import Inference
+from inference import Inference
 import logging
 
 
@@ -89,20 +88,6 @@ def batch_inference(request: BatchInferenceInput):
         return BatchInferenceOutput(predictions=result['results'],
                                     metrics=result['metrics']
                                     )
-
-    except Exception as e:
-        logging.error(e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/train")
-def train(request: TrainData):
-    """
-    """
-
-    try:
-        trainer = ModelTrainer(request.model_name)
-        result = trainer.retrain()
-        return TrainResult(metrics=result['metrics'])
 
     except Exception as e:
         logging.error(e)
