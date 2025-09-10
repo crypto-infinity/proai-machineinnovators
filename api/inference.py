@@ -18,27 +18,8 @@ class Inference():
         result = self.pipe(string)[0]
         return result['label'], result['score']
     
-    def batch_inference(self, hf_dataset):
-        dataset = load_dataset(hf_dataset)
-        y_true = list(dataset['label'])
-
-        results = dataset.map(self.infer_wrap)
-        y_pred = results["label"]
-
-        acc = accuracy_score(y_true, y_pred)
-        precision, recall, f1, _ = precision_recall_fscore_support(
-            y_true, y_pred, 
-            average="weighted", 
-            zero_division=0
-        )
-
-        metrics = {
-            "accuracy": acc,
-            "precision": precision,
-            "recall": recall,
-            "f1": f1
-        }
-        return {"results": results, "metrics": metrics}
+    def batch_inference(self, hf_dataset, split):
+        pass
 
 
 

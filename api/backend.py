@@ -53,6 +53,7 @@ class InferenceOutput(BaseModel):
 
 class BatchInferenceInput(InferenceInput):
     dataset: str #huggingface format user/dataset
+    split: str = "train"
 
 class BatchInferenceOutput(BaseModel):
     predictions: dict
@@ -83,7 +84,7 @@ def batch_inference(request: BatchInferenceInput):
 
     try:
         infer = Inference(model=request.model)
-        result = infer.batch_inference(request.dataset)
+        result = infer.batch_inference(request.dataset, request.split)
 
         return BatchInferenceOutput(predictions=result['results'],
                                     metrics=result['metrics']
