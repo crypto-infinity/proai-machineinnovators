@@ -86,6 +86,12 @@ def batch_inference(request: BatchInferenceInput):
         infer = Inference(model=request.model)
         result = infer.batch_inference(request.dataset, request.split)
 
+        if result is None:
+            raise HTTPException(
+                status_code=500, 
+                detail="Batch inference returned no result."
+            )
+
         return BatchInferenceOutput(predictions=result['results'],
                                     metrics=result['metrics']
                                     )
