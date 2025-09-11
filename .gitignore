@@ -1,3 +1,6 @@
 .venv
 .env
 __pycache__
+sentiment140_data
+model/hf_model
+results
