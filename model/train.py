@@ -5,7 +5,7 @@ from datasets import Dataset, DatasetDict
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 
 MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-OUTPUT_DIR = "./model/hf_model"
+OUTPUT_DIR = "./results/hf_model"
 DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 DATA_DIR = "./sentiment140_data"
 
@@ -72,6 +72,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=16,
     num_train_epochs=3,
     weight_decay=0.01,
+    save_strategy="no"
 )
 
 trainer = Trainer(
