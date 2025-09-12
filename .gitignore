@@ -4,3 +4,4 @@ __pycache__
 sentiment140_data
 model/hf_model
 results
+.vscode
