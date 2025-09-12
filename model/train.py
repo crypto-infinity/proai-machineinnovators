@@ -8,7 +8,7 @@ from datasets import Dataset, DatasetDict
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 
 MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
-OUTPUT_DIR = "./model/hf_model"
+OUTPUT_DIR = "./results/hf_model"
 DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 DATA_DIR = "./sentiment140_data"
 
@@ -30,20 +30,33 @@ def load_sentiment140_as_hf_dataset():
     col_names = ["target", "id", "date", "flag", "user", "text"]
     train_df = pd.read_csv(train_path, encoding="latin-1", names=col_names)
     test_df = pd.read_csv(test_path, encoding="latin-1", names=col_names)
+
     # Mappa i target: 0=neg, 2=neu, 4=pos
     label_map = {0: 0, 2: 1, 4: 2}
     train_df = train_df[train_df["target"].isin(label_map.keys())]
     test_df = test_df[test_df["target"].isin(label_map.keys())]
     train_df["label"] = train_df["target"].map(label_map)
     test_df["label"] = test_df["target"].map(label_map)
+
+    # Limita a 5000 elementi per velocizzare il training
+    train_df = train_df.iloc[:5000]
+    test_df = test_df.iloc[:5000]
+
     # Crea Dataset HuggingFace
     train_ds = Dataset.from_pandas(train_df[["text", "label"]], preserve_index=False)
     test_ds = Dataset.from_pandas(test_df[["text", "label"]], preserve_index=False)
+    
     # Split validation dal train
     train_valid = train_ds.train_test_split(test_size=0.1, seed=42)
+
+    # Limita anche validation e train split a max 5000 elementi (in realtà saranno 4500 train, 500 valid)
+    train_split = train_valid["train"].select(range(min(5000, len(train_valid["train"]))))
+    valid_split = train_valid["test"].select(range(min(5000, len(train_valid["test"]))))
+    test_ds = test_ds.select(range(min(5000, len(test_ds))))
+
     return DatasetDict({
-        "train": train_valid["train"],
-        "validation": train_valid["test"],
+        "train": train_split,
+        "validation": valid_split,
         "test": test_ds
     })
 
@@ -74,6 +87,7 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=32,
     num_train_epochs=1,
     weight_decay=0.01,
+    save_strategy="no"
 )
 
 trainer = Trainer(

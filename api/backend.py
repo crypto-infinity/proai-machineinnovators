@@ -76,8 +76,8 @@ def inference(request: InferenceInput):
         logging.error(e)
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/batch_inference", response_model=BatchInferenceOutput)
-def batch_inference(request: BatchInferenceInput):
+@app.post("/train_and_upload")
+def train(request: TrainData):
     """
     Batch inference for sentiment analysis.
     """
