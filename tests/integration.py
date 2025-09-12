@@ -52,6 +52,17 @@ def test_inference_valid_custom_model():
 	assert isinstance(data["score"], float)
 
 
+def test_performance_compute():
+	response = requests.post(f"{API_URL}/performance")
+	assert response.status_code == 200
+	
+	data = response.json()
+	assert "accuracy" in data
+	assert "precision" in data
+	assert "recall" in data
+	assert "f1" in data
+	assert isinstance(data["score"], float)
+
 def test_inference_invalid_model():
 	payload = {"input_string": "Test", "model": "modello-invalido"}
 	response = requests.post(f"{API_URL}/inference", json=payload)
