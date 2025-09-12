@@ -40,6 +40,7 @@ class InferenceInput(BaseModel):
     input_string: str
     model: str
 
+
 class InferenceOutput(BaseModel):
     label: str
     score: float
@@ -64,7 +65,7 @@ def inference(request: InferenceInput):
         label, score = infer.single_inference(request.input_string)
 
         return InferenceOutput(label=label, score=score)
-        
+
     except Exception as e:
         logging.error(e)
         raise HTTPException(status_code=500, detail=str(e))
