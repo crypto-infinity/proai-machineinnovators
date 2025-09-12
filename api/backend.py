@@ -36,13 +36,6 @@ app.add_middleware(
 
 # Data structures setup
 
-class TrainData(BaseModel):
-    model_name: str
-    dataset: str
-
-class TrainResult(BaseModel):
-    metrics: dict
-
 class InferenceInput(BaseModel):
     input_string: str
     model: str
@@ -51,13 +44,13 @@ class InferenceOutput(BaseModel):
     label: str
     score: float
 
-class BatchInferenceInput(InferenceInput):
-    dataset: str #huggingface format user/dataset
-    split: str = "train"
+# class BatchInferenceInput(InferenceInput):
+#     dataset: str #huggingface format user/dataset
+#     split: str = "train"
 
-class BatchInferenceOutput(BaseModel):
-    predictions: dict
-    metrics: dict
+# class BatchInferenceOutput(BaseModel):
+#     predictions: dict
+#     metrics: dict
 
 
 @app.post("/inference", response_model=InferenceOutput)
@@ -72,30 +65,6 @@ def inference(request: InferenceInput):
 
         return InferenceOutput(label=label, score=score)
         
-    except Exception as e:
-        logging.error(e)
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/train_and_upload")
-def train(request: TrainData):
-    """
-    Batch inference for sentiment analysis.
-    """
-
-    try:
-        infer = Inference(model=request.model)
-        result = infer.batch_inference(request.dataset, request.split)
-
-        if result is None:
-            raise HTTPException(
-                status_code=500, 
-                detail="Batch inference returned no result."
-            )
-
-        return BatchInferenceOutput(predictions=result['results'],
-                                    metrics=result['metrics']
-                                    )
-
     except Exception as e:
         logging.error(e)
         raise HTTPException(status_code=500, detail=str(e))
