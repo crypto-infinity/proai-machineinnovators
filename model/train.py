@@ -1,6 +1,9 @@
 
 import os
 import pandas as pd
+import zipfile
+import requests
+
 from datasets import Dataset, DatasetDict
 from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 
@@ -10,8 +13,7 @@ DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 DATA_DIR = "./sentiment140_data"
 
 def download_and_extract_sentiment140():
-    import zipfile
-    import requests
+
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR, exist_ok=True)
     zip_path = os.path.join(DATA_DIR, "trainingandtestdata.zip")
@@ -54,7 +56,7 @@ def preprocess_function(examples):
         examples["text"],
         truncation=True,
         padding="max_length",
-        max_length=128
+        max_length=64
     )
 
 print("Downloading and preparing Sentiment140 dataset.")
@@ -68,9 +70,9 @@ print("Setting arguments for training.")
 training_args = TrainingArguments(
     output_dir="./results",
     learning_rate=2e-5,
-    per_device_train_batch_size=16,
-    per_device_eval_batch_size=16,
-    num_train_epochs=3,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=32,
+    num_train_epochs=1,
     weight_decay=0.01,
 )
 
