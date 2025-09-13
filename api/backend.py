@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from prometheus_client import Gauge, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
-from data.download_dataset import (
+from model.download_dataset import (
     download_and_extract_sentiment140,
     load_sentiment140_as_pandas_dataset,
 )

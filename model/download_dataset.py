@@ -79,11 +79,15 @@ def load_sentiment140_as_hf_dataset() -> DatasetDict:
 
 def load_sentiment140_as_pandas_dataset() -> dict:
     train_path = os.path.join(
-        DATA_URL,
+        os.getcwd(),
+        "model",
+        "sentiment140_data",
         "training.1600000.processed.noemoticon.csv"
     )
     test_path = os.path.join(
-        DATA_URL,
+        os.getcwd(),
+        "model",
+        "sentiment140_data",
         "testdata.manual.2009.06.14.csv"
     )
 
