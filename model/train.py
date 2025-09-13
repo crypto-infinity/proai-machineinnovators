@@ -1,9 +1,9 @@
 
-
-from data.download_dataset import (
+from download_dataset import (
     download_and_extract_sentiment140,
     load_sentiment140_as_hf_dataset,
 )
+
 
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from transformers import Trainer, TrainingArguments

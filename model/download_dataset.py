@@ -27,11 +27,13 @@ def download_and_extract_sentiment140(
 
 def load_sentiment140_as_hf_dataset() -> DatasetDict:
     train_path = os.path.join(
-        DATA_URL,
+        "model",
+        "sentiment140_data",
         "training.1600000.processed.noemoticon.csv"
     )
     test_path = os.path.join(
-        DATA_URL,
+        "model",
+        "sentiment140_data",
         "testdata.manual.2009.06.14.csv"
     )
 
