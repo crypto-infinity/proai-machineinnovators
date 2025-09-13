@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from prometheus_client import Gauge, generate_latest, CONTENT_TYPE_LATEST
 from fastapi.responses import Response
-from model.download_dataset import (
+from model.dataset import (
     download_and_extract_sentiment140,
     load_sentiment140_as_pandas_dataset,
 )
@@ -75,7 +75,14 @@ class PerformanceMetricsOutput(BaseModel):
 @app.post("/inference", response_model=InferenceOutput)
 def inference(request: InferenceInput):
     """
-    Single string inference for sentiment analysis.
+    Perform sentiment analysis inference on a single input string.
+
+    Args:
+        request (InferenceInput):
+            The input data containing the string to analyze and the model name.
+
+    Returns:
+        InferenceOutput: The predicted label and score for the input string.
     """
 
     try:
@@ -99,21 +106,34 @@ f1_gauge = Gauge('model_f1', 'F1-score')
 
 @app.post("/performance", response_model=PerformanceMetricsOutput)
 def performance():
+    """
+    Calculate performance metrics (accuracy, precision, recall, f1) on the
+    Sentiment140 test dataset with the fine-tuned model (3 classes).
 
+    Args:
+        None
+
+    Returns:
+        PerformanceMetricsOutput: The calculated metrics for the model
+        on the test set.
+    """
     download_and_extract_sentiment140()
     dataset = load_sentiment140_as_pandas_dataset()['test']
 
     infer = Inference(model=os.getenv("HF_REPO"))
 
     y_true = np.array(dataset['label'])
-    y_pred = np.array(
-        infer.single_inference(text)[0] for text in dataset["text"]
-    )
 
-    # Calcola le metriche
+    y_pred = []
+    for text in dataset["text"]:
+        y_pred.append(infer.single_inference(text, return_as_strings=True)[0])
+
+    y_pred = np.array(y_pred)
+
+    # Calculate metrics
     accuracy = accuracy_score(y_true, y_pred)
     precision, recall, f1, _ = precision_recall_fscore_support(
-        y_true, y_pred, average="weighted"
+        y_true, y_pred, average="weighted", zero_division=0
     )
 
     accuracy_gauge.set(float(accuracy))
@@ -131,6 +151,15 @@ def performance():
 
 @app.get("/metrics")
 def metrics():
+    """
+    Expose Prometheus metrics for monitoring.
+
+    Args:
+        None
+
+    Returns:
+        Response: Prometheus metrics in the expected format.
+    """
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
@@ -138,7 +167,12 @@ def metrics():
 def health():
     """
     Health check endpoint.
-    Returns API status and version.
+
+    Args:
+        None
+
+    Returns:
+        dict: API status and version information.
     """
     return {"status": "ok"}
 
@@ -146,6 +180,12 @@ def health():
 @app.get("/")
 def main_page():
     """
-    Redirects root endpoint to health check.
+    Redirect the root endpoint to the health check endpoint.
+
+    Args:
+        None
+
+    Returns:
+        RedirectResponse: Redirects to /health with status code 301.
     """
     return RedirectResponse(url="/health", status_code=301)

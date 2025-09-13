@@ -10,10 +10,10 @@ class Inference():
             model=model
         )
 
-    def infer_wrap(self, record):
-        label, score = self.single_inference(record["text"])
-        return {"label": label, "score": score}
-
-    def single_inference(self, string):
+    def single_inference(self, string, return_as_strings=False) -> tuple:
         result = self.pipe(string)[0]
-        return result['label'], result['score']
+        if not return_as_strings:
+            return result['label'], result['score']
+        else:
+            label_map = {"positive": 2, "neutral": 1, "negative": 0}
+            return label_map[result["label"]], result['score']
