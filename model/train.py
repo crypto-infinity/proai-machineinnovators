@@ -1,5 +1,5 @@
 
-from download_dataset import (
+from model.dataset import (
     download_and_extract_sentiment140,
     load_sentiment140_as_hf_dataset,
 )
