@@ -1,0 +1,7 @@
+# Dockerfile per FastAPI backend
+FROM prom/prometheus
+
+COPY prometheus/prometheus.yml /etc/prometheus/prometheus.yml
+COPY prometheus/model_alerts.yml /etc/prometheus/model_alerts.yml
+
+EXPOSE 9090
