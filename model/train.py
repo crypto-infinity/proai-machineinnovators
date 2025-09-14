@@ -16,8 +16,14 @@ from model.dataset import (
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from transformers import Trainer, TrainingArguments
 
+
 MODEL = "cardiffnlp/twitter-roberta-base-sentiment-latest"
 OUTPUT_DIR = "./results/hf_model"
+
+
+print("Downloading and preparing Sentiment140 dataset.")
+download_and_extract_sentiment140()
+dataset = load_sentiment140_as_hf_dataset()
 
 
 print("Importing model and tokenizer.")
@@ -33,10 +39,6 @@ def preprocess_function(examples):
         max_length=64
     )
 
-
-print("Downloading and preparing Sentiment140 dataset.")
-download_and_extract_sentiment140()
-dataset = load_sentiment140_as_hf_dataset()
 
 print("Preprocessing dataset.")
 
