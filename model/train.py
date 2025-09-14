@@ -1,4 +1,12 @@
 
+import sys
+import os
+
+# Pipeline execution fix from ./ or ./model
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
 from model.dataset import (
     download_and_extract_sentiment140,
     load_sentiment140_as_hf_dataset,
