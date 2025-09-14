@@ -10,7 +10,7 @@ DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 
 
 def download_and_extract_sentiment140(
-        data_dir="./data/sentiment140_data",
+        data_dir="./sentiment140_data",
         data_url=DATA_URL):
 
     zip_path = os.path.join(data_dir, "trainingandtestdata.zip")
