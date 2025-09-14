@@ -12,8 +12,8 @@ DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 def download_and_extract_sentiment140(
         data_dir="./sentiment140_data",
         data_url=DATA_URL):
- 
-    print("Avvio Download Sentiment140.")
+
+    print("Download Sentiment140 starting.")
 
     zip_path = os.path.join(data_dir, "trainingandtestdata.zip")
 
@@ -23,22 +23,22 @@ def download_and_extract_sentiment140(
         with open(zip_path, "wb") as f:
             f.write(r.content)
 
-    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(data_dir)
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
 
-    print("Download terminato.")
+        print("Download finished.")
+    else:
+        print("Dataset already downloaded, skipping.")
 
 
 def load_sentiment140_as_hf_dataset() -> DatasetDict:
     train_path = os.path.join(
         os.getcwd(),
-        "model",
         "sentiment140_data",
         "training.1600000.processed.noemoticon.csv"
     )
     test_path = os.path.join(
         os.getcwd(),
-        "model",
         "sentiment140_data",
         "testdata.manual.2009.06.14.csv"
     )
