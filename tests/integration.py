@@ -9,7 +9,7 @@ API_URL = "http://127.0.0.1:8000"
 @pytest.fixture(scope="session", autouse=True)
 def start_uvicorn():
     proc = subprocess.Popen(
-        ["uvicorn", "api.backend:app", "--host", "127.0.0.1", "--port", "8000"]
+        ["gunicorn", "api.backend:app"]
     )
 
     # Check for server startup actively
