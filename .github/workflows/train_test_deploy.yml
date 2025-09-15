@@ -23,6 +23,18 @@ jobs:
       - name: Run training script
         run: python model/train.py
 
+      - name: Login HuggingFace CLI
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          hf auth login --token $HF_TOKEN
+
+      - name: Upload model to HuggingFace with CLI
+        env:
+          HF_REPO: ${{ secrets.HF_REPO }}
+        run: |
+          hf upload $HF_REPO ./results/hf_model/*
+
   test:
     runs-on: ubuntu-latest
     needs: train
@@ -43,32 +55,3 @@ jobs:
 
       - name: Run integration tests
         run: pytest tests/integration.py
-
-  upload-huggingface:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies e HuggingFace CLI
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
-
-      - name: Login HuggingFace CLI
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: |
-          hf auth login --token $HF_TOKEN
-
-      - name: Upload model to HuggingFace con CLI
-        env:
-          HF_REPO: ${{ secrets.HF_REPO }}
-        run: |
-          hf upload $HF_REPO ./results/hf_model/*
