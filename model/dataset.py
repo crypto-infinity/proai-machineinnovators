@@ -12,6 +12,16 @@ DATA_URL = "https://cs.stanford.edu/people/alecmgo/trainingandtestdata.zip"
 def download_and_extract_sentiment140(
         data_dir="./sentiment140_data",
         data_url=DATA_URL):
+    """
+    Download and extracts Sentiment140.
+
+    Args:
+        data_dir: the path in which the dataset will be extracted.
+        data_url: the URL from which the dataset will be downloaded.
+
+    Returns:
+        None
+    """
 
     print("Download Sentiment140 starting.")
 
@@ -32,6 +42,16 @@ def download_and_extract_sentiment140(
 
 
 def load_sentiment140_as_hf_dataset() -> DatasetDict:
+    """
+    Loads Sentiment140 as HuggingFace Dataset() class.
+
+    Args:
+        None
+
+    Returns:
+        DatasetDict: the dataset in a dictionary format.
+    """
+
     train_path = os.path.join(
         os.getcwd(),
         "sentiment140_data",
@@ -47,14 +67,13 @@ def load_sentiment140_as_hf_dataset() -> DatasetDict:
     train_df = pd.read_csv(train_path, encoding="latin-1", names=col_names)
     test_df = pd.read_csv(test_path, encoding="latin-1", names=col_names)
 
-    # Target: 0=neg, 2=neu, 4=pos
+    # Targets: 0=neg, 2=neu, 4=pos
     label_map = {0: 0, 2: 1, 4: 2}
     train_df = train_df[train_df["target"].isin(label_map.keys())]
     test_df = test_df[test_df["target"].isin(label_map.keys())]
     train_df["label"] = train_df["target"].map(label_map)
     test_df["label"] = test_df["target"].map(label_map)
 
-    # Limita a 5000 elementi per velocizzare il training
     train_df = train_df.iloc[:5000]
     test_df = test_df.iloc[:5000]
 
@@ -84,6 +103,16 @@ def load_sentiment140_as_hf_dataset() -> DatasetDict:
 
 
 def load_sentiment140_as_pandas_dataset() -> dict:
+    """
+    Loads Sentiment140 as Pandas dataframe.
+
+    Args:
+        None
+
+    Returns:
+        DatasetDict: the dataset in a dictionary format.
+    """
+
     train_path = os.path.join(
         os.getcwd(),
         "sentiment140_data",
