@@ -1,8 +1,5 @@
 # Monitoraggio della reputazione online di un’azienda
 
----
-
-## 📖 Presentazione e Navigazione del Software
 
 Questa repository contiene una soluzione completa per il monitoraggio della reputazione aziendale sui social media tramite analisi automatica del sentiment, pipeline MLOps e monitoraggio delle performance. Il progetto è strutturato in moduli separati per API, training, inferenza, monitoraggio e automazione.
 
@@ -12,11 +9,37 @@ Questa repository contiene una soluzione completa per il monitoraggio della repu
 - `model/` — Script per training, gestione e caricamento del modello di sentiment analysis.
 - `docker/` — Dockerfile per l’applicazione e per Prometheus.
 - `prometheus/` — Configurazioni per il monitoraggio delle metriche.
-- `results/` — Output di training, metriche e risultati.
 - `tests/` — Test di integrazione automatizzati.
 
 ---
 
+## 🤗 Il Modello HuggingFace: Twitter-RoBERTa Sentiment140 Fine-tuned
+
+**Repository modello:** [infinitydreams/roberta-base-sentiment-finetuned](https://huggingface.co/infinitydreams/roberta-base-sentiment-finetuned)
+
+Questo modello è una versione fine-tuned di `cardiffnlp/twitter-roberta-base-sentiment-latest` sul dataset Sentiment140, ottimizzato per l'analisi del sentiment di tweet in italiano e inglese. Il modello classifica i testi in tre categorie: negativo, neutro, positivo.
+
+### Come usare il modello
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import torch
+
+tokenizer = AutoTokenizer.from_pretrained("<MODEL_DIR>")
+model = AutoModelForSequenceClassification.from_pretrained("<MODEL_DIR>")
+
+text = "Questo è un tweet fantastico!"
+inputs = tokenizer(text, return_tensors="pt", truncation=True, padding="max_length", max_length=128)
+with torch.no_grad():
+  logits = model(**inputs).logits
+  predicted_class = logits.argmax(-1).item()
+
+# Mappatura delle classi:
+# 0 = Negativo, 1 = Neutro, 2 = Positivo
+print(f"Sentiment: {predicted_class}")
+```
+Sostituisci `<MODEL_DIR>` con il percorso della cartella del modello salvato (es. `./results/hf_model`).
+
+Per maggiori informazioni: https://huggingface.co/infinitydreams/roberta-base-sentiment-finetuned#twitter-roberta-sentiment140-fine-tuned
 
 ## 🔄 Pipeline CI/CD e Automazione
 
@@ -72,7 +95,7 @@ Prometheus sarà accessibile su `http://localhost:9090`.
 
 ## 🛠️ Uso delle API
 
-Le API sono documentate automaticamente da FastAPI su `/docs` (Swagger UI) e `/redoc`.
+Le API sono documentate automaticamente da FastAPI su `/docs` (Swagger UI).
 
 ### Endpoint Principali
 
