@@ -24,8 +24,7 @@ import logging
 # Load env variables
 load_dotenv()
 
-DATA_DIR = "../data/sentiment140_data"
-
+# Setup logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
@@ -96,7 +95,7 @@ def inference(request: InferenceInput):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# Grafana Metrics
+# Prometheus Instantaneous Gauge metrics
 
 accuracy_gauge = Gauge('model_accuracy', 'Accuracy')
 precision_gauge = Gauge('model_precision', 'Precision')
