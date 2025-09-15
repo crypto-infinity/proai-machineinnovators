@@ -120,7 +120,10 @@ def performance():
     download_and_extract_sentiment140()
     dataset = load_sentiment140_as_pandas_dataset()['test']
 
-    infer = Inference(model=os.getenv("HF_REPO"))
+    infer = Inference(
+        model=os.getenv("HF_REPO")
+        or "infinitydreams/roberta-base-sentiment-finetuned"
+    )
 
     y_true = np.array(dataset['label'])
 

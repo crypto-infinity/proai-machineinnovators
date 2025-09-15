@@ -1,12 +1,12 @@
 # Dockerfile per FastAPI backend
-FROM python:3.12-sli
+FROM python:3.12
 
-WORKDIR /app
+WORKDIR /
 
-COPY model/requirements.txt ./requirements.txt
+COPY requirements.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY model/ .
+COPY / .
 EXPOSE 8000
 
-ENTRYPOINT ["gunicorn", "main:app"]
+ENTRYPOINT ["gunicorn", "api.backend:app"]
