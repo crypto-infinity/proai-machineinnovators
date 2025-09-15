@@ -52,7 +52,9 @@ training_args = TrainingArguments(
     per_device_eval_batch_size=32,
     num_train_epochs=1,
     weight_decay=0.01,
-    save_strategy="no"
+    save_strategy="no",
+    load_best_model_at_end=True,
+    metric_for_best_model="eval_loss"
 )
 
 trainer = Trainer(
