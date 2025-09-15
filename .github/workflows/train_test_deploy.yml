@@ -33,7 +33,7 @@ jobs:
         env:
           HF_REPO: ${{ secrets.HF_REPO }}
         run: |
-          hf upload $HF_REPO ./results/hf_model/*
+          hf upload $HF_REPO ./results/hf_model
 
   test:
     runs-on: ubuntu-latest
