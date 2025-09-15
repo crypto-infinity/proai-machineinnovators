@@ -1,0 +1,13 @@
+pydantic
+fastapi
+dotenv
+uvicorn[standard]
+pytest
+huggingface_hub[cli]
+transformers
+torch
+datasets
+huggingface_hub[hf_xet]
+scikit-learn
+accelerate>=0.26.0
+prometheus_client
